@@ -1,5 +1,5 @@
-# Firebase Studio
+# qr genius
 
-This is a NextJS starter in Firebase Studio.
+quick nextjs starter with firebase studio. Just a simple qr code generator.
 
 To get started, take a look at src/app/page.tsx.

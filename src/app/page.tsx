@@ -18,14 +18,29 @@ export default function Home() {
     try {
       const response = await QRCode.toDataURL(text, {
         width: 400,
+
         color: {
           dark: "#000",
           light: "#FFF",
         },
       });
       setQrCode(response);
+      
     } catch (error) {
       console.log(error);
+    }
+
+    try {
+      const canvas = qrCodeRef.current;
+      QRCode.toCanvas(canvas, text);
+
+    } catch (error) {
+      console.error("Error generating QR code:", error);
+      toast({
+        title: "Error!",
+        description: "Failed to generate QR code.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -108,7 +123,7 @@ export default function Home() {
         {qrCode && (
           <Card className="w-full mt-6 rounded-md shadow-sm">
             <CardContent className="flex flex-col items-center justify-center p-4">
-              <canvas ref={qrCodeRef} style={{ height: "auto", maxWidth: "100%", width: "100%" }} src={qrCode} />
+              <canvas ref={qrCodeRef} style={{ height: "100px", maxWidth: "100%", width: "100%" }} src={qrCode} />
               <div className="flex justify-around w-full mt-4">
                 <Button onClick={() => handleDownload("PNG")} className="bg-green-500 text-white hover:bg-green-700 rounded-md shadow-sm">
                   <Download className="mr-2 h-4 w-4" />
