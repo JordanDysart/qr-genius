@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import QRCode from 'qrcode';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Download, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Toaster } from '@/components/ui/toaster';
 
 export default function Home() {
   const [text, setText] = useState<string>("");
@@ -28,19 +29,6 @@ export default function Home() {
       
     } catch (error) {
       console.log(error);
-    }
-
-    try {
-      const canvas = qrCodeRef.current;
-      QRCode.toCanvas(canvas, text);
-
-    } catch (error) {
-      console.error("Error generating QR code:", error);
-      toast({
-        title: "Error!",
-        description: "Failed to generate QR code.",
-        variant: "destructive",
-      });
     }
   };
 
@@ -98,12 +86,20 @@ export default function Home() {
       }
       const item = new ClipboardItem({ "image/png": blob });
       navigator.clipboard.write([item]);
-      toast({
-        title: "Success!",
-        description: "Copied QR Code to clipboard!",
-      });
     });
+
+    toast({
+      title: "Success!",
+      description: "Copied QR Code to clipboard!",
+    });
+
   };
+
+  useEffect(() => {
+    if (qrCodeRef.current) {
+      QRCode.toCanvas(qrCodeRef.current, text);
+    }
+  }, [qrCode, qrCodeRef]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
@@ -123,17 +119,17 @@ export default function Home() {
         {qrCode && (
           <Card className="w-full mt-6 rounded-md shadow-sm">
             <CardContent className="flex flex-col items-center justify-center p-4">
-              <canvas ref={qrCodeRef} style={{ height: "100px", maxWidth: "100%", width: "100%" }} src={qrCode} />
+              <canvas ref={qrCodeRef} style={{ height: "auto", maxWidth: "100%", width: "100%" }} src={qrCode} />
               <div className="flex justify-around w-full mt-4">
-                <Button onClick={() => handleDownload("PNG")} className="bg-green-500 text-white hover:bg-green-700 rounded-md shadow-sm">
+                <Button onClick={() => handleDownload("PNG")} className="bg-primary text-white hover:bg-green-700 rounded-md shadow-sm">
                   <Download className="mr-2 h-4 w-4" />
                   PNG
                 </Button>
-                <Button onClick={() => handleDownload("SVG")} className="bg-green-500 text-white hover:bg-green-700 rounded-md shadow-sm">
+                <Button onClick={() => handleDownload("SVG")} className="bg-primary text-white hover:bg-green-700 rounded-md shadow-sm">
                   <Download className="mr-2 h-4 w-4" />
                   SVG
                 </Button>
-                <Button onClick={handleCopy} className="bg-green-500 text-white hover:bg-green-700 rounded-md shadow-sm">
+                <Button onClick={handleCopy} className="bg-primary text-white hover:bg-green-700 rounded-md shadow-sm">
                   <Copy className="mr-2 h-4 w-4" />
                   Copy
                 </Button>
@@ -142,6 +138,7 @@ export default function Home() {
           </Card>
         )}
       </div>
+      <Toaster />
     </div>
   );
 }
