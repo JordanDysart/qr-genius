@@ -26,11 +26,17 @@ export default function Home() {
         },
       });
       setQrCode(response);
-      
+
     } catch (error) {
       console.log(error);
     }
   };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      generateQrCode();
+    }
+  }
 
   const handleDownload = async (format: string) => {
     if (!qrCodeRef.current) {
@@ -110,6 +116,7 @@ export default function Home() {
           placeholder="Enter text to generate QR code"
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleKeyDown}
           className="w-full rounded-md shadow-sm focus:ring focus:ring-primary focus:outline-none mb-4"
         />
         <Button onClick={generateQrCode} className="bg-primary text-primary-foreground hover:bg-primary/80 rounded-md shadow-sm w-full">
